@@ -1,26 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./styles.css";
 import Navbar from "./components/Navbar/Navbar";
 import TaskList from "./components/TaskList/TaskList";
+import Database from "./database.json";
 
+const fs = require("fs");
+
+let cont = 0;
 let idAcc = 0;
-const generateId = () => {
-  idAcc = idAcc + 1;
+const generateId = (idTask) => {
+  if (idTask !== "") {
+    idAcc = idTask;
+  } else {
+    idAcc = idAcc + 1;
+  }
   return idAcc;
 };
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
 
-  const addTask = (title, state) => {
+  const addTask = (title, state, id) => {
     const newTask = {
-      id: generateId(),
+      id: generateId(id),
       title,
       state
     };
     setTasks((existingTasks) => {
-      return [...existingTasks, newTask];
+      var teste = [...existingTasks, newTask];
+      console.log(teste);
+      return teste;
     });
+    let newElement = [
+      ...Database,
+      { id: 9, task: "Alterando Json", taskState: "Fazendo" }
+    ];
+    let dataElem = JSON.stringify(newElement);
+    console.log(dataElem);
+    //fs.writeFile('database2.json',dataElem);
   };
 
   const updateTask = (id, title, state) => {
@@ -41,6 +58,18 @@ export default function App() {
     });
   };
 
+  const loadTasks = () => {
+    //"cont" rules the addTask function
+    cont = cont + 1;
+    if (cont === 1) {
+      console.log(Database[0].task);
+      for (var i = 0; i < Database.length; i++) {
+        addTask(Database[i].task, Database[i].taskState, Database[i].id);
+      }
+      //Database = [...Database,{"id":9,"task":"Alterando Json","taskState":"Fazendo"}]
+    }
+  };
+
   return (
     <div className="App">
       <Navbar />
@@ -52,6 +81,7 @@ export default function App() {
           tasks={tasks.filter((t) => t.state === "Pendente")}
           onTaskUpdate={updateTask}
           onDeleteTask={deleteTask}
+          onLoadTask={loadTasks}
         />
         <TaskList
           title="Fazendo"
@@ -60,6 +90,7 @@ export default function App() {
           tasks={tasks.filter((t) => t.state === "Fazendo")}
           onTaskUpdate={updateTask}
           onDeleteTask={deleteTask}
+          onLoadTask={loadTasks}
         />
         <TaskList
           title="Completo"
@@ -68,6 +99,7 @@ export default function App() {
           tasks={tasks.filter((t) => t.state === "Completo")}
           onTaskUpdate={updateTask}
           onDeleteTask={deleteTask}
+          onLoadTask={loadTasks}
         />
       </div>
     </div>

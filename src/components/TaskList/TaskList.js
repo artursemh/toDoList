@@ -11,10 +11,16 @@ export default function TaskList({
   onAddTask,
   tasks,
   onTaskUpdate,
-  onDeleteTask
+  onDeleteTask,
+  onLoadTask
 }) {
   const addTask = () => {
-    onAddTask("Nova tarefa", taskState);
+    onAddTask("Nova tarefa", taskState, "");
+  };
+
+  const loadTasks = () => {
+    console.log("Primeiro aqui na TaskList");
+    onLoadTask();
   };
 
   return (
@@ -30,11 +36,12 @@ export default function TaskList({
               taskState={task.state}
               onTaskUpdate={onTaskUpdate}
               onDeleteTask={onDeleteTask}
+              onLoadTask={onLoadTask}
             />
           );
         })}
         {tasks.length === 0 && <div className="empty-list">Lista vazia</div>}
-        <button className="btn" onClick={addTask}>
+        <button className="btn" onClick={addTask} onLoad={loadTasks}>
           <img src={plusIcon} alt="Add new task" />
           Adicionar
         </button>
